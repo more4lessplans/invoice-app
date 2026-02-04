@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Invoice Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen py-12 px-4 font-sans">
+
+    <div class="max-w-2xl mx-auto mb-8 flex justify-center">
+        <img src="main.png" alt="Company Logo" class="h-20 w-auto">
+    </div>
+
+    <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+        <div class="bg-slate-900 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold tracking-tight">HVAC SERVICE INVOICE</h1>
+        </div>
+
+        <form id="invoiceForm" class="p-8 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Customer Details</h3>
+                    <input type="text" id="custName" placeholder="Customer Name" required class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition">
+                    <input type="email" id="custEmail" placeholder="Email Address" required class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition">
+                    <input type="tel" id="custPhone" placeholder="Phone Number" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition">
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Service Address</h3>
+                    <textarea id="custAddress" placeholder="Street Address, City, Postal Code" rows="3" required class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition"></textarea>
+                    <input type="date" id="serviceDate" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition">
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Services & Parts</h3>
+                    <button type="button" onclick="addLineItem()" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full hover:bg-slate-200 transition">+ Add Item</button>
+                </div>
+                <div id="lineItemsList" class="space-y-3">
+                    <div class="grid grid-cols-12 gap-3 item-row">
+                        <input type="text" placeholder="Description (e.g. AC Tune-up)" class="col-span-8 p-3 rounded-xl border border-slate-200 outline-none">
+                        <input type="number" placeholder="Price" class="col-span-4 p-3 rounded-xl border border-slate-200 outline-none price-input">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="bg-slate-50 p-6 rounded-2xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-600 font-medium">Discount (Amount)</span>
+                    <input type="number" id="discount" placeholder="0.00" class="w-24 p-2 rounded-lg border border-slate-200 text-right">
+                </div>
+                <div class="flex justify-between items-center border-t border-slate-200 pt-4">
+                    <span class="text-xl font-bold text-slate-900">Total Estimate</span>
+                    <span id="displayTotal" class="text-xl font-black text-slate-900">$0.00</span>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-slate-800 transform active:scale-95 transition-all shadow-lg shadow-slate-200">
+                Generate & Send Square Invoice
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function addLineItem() {
+            const container = document.getElementById('lineItemsList');
+            const newRow = document.createElement('div');
+            newRow.className = 'grid grid-cols-12 gap-3 item-row';
+            newRow.innerHTML = `
+                <input type="text" placeholder="Description" class="col-span-8 p-3 rounded-xl border border-slate-200 outline-none">
+                <input type="number" placeholder="Price" class="col-span-4 p-3 rounded-xl border border-slate-200 outline-none price-input">
+            `;
+            container.appendChild(newRow);
+        }
+
+        // Add auto-totaling logic here in your final version
+        document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = 'Creating Invoice...';
+            btn.disabled = true;
+
+            // Collect Data
+            const rows = document.querySelectorAll('.item-row');
+            const items = Array.from(rows).map(row => ({
+                description: row.querySelectorAll('input')[0].value,
+                price: row.querySelectorAll('input')[1].value
+            }));
+
+            const payload = {
+                name: document.getElementById('custName').value,
+                email: document.getElementById('custEmail').value,
+                address: document.getElementById('custAddress').value,
+                discount: document.getElementById('discount').value,
+                items: items
+            };
+
+            // Send to Pipedream
+            const res = await fetch('https://eovh4bx2wds8j60.m.pipedream.net', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if(res.ok) alert('Invoice Sent!');
+            btn.innerText = 'Generate & Send Square Invoice';
+            btn.disabled = false;
+        });
+    </script>
+</body>
+</html>
