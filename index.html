@@ -108,17 +108,13 @@
             document.getElementById('displayTotal').innerText = `$${total.toFixed(2)}`;
         }
 
-        document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
+      document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            const successArea = document.getElementById('successArea');
-            const linkInput = document.getElementById('invoiceLink');
-            
-            btn.innerText = 'Creating Invoice...';
+            btn.innerText = 'Syncing with Square...';
             btn.disabled = true;
 
-            const rows = document.querySelectorAll('.item-row');
-            const items = Array.from(rows).map(row => ({
+            const items = Array.from(document.querySelectorAll('.item-row')).map(row => ({
                 description: row.querySelectorAll('input')[0].value,
                 price: row.querySelectorAll('input')[1].value
             }));
@@ -126,35 +122,36 @@
             const payload = {
                 name: document.getElementById('custName').value,
                 email: document.getElementById('custEmail').value,
-                phone: document.getElementById('custPhone').value, // Sent to Pipedream
-                address: document.getElementById('custAddress').value, // Sent to Pipedream
+                phone: document.getElementById('custPhone').value,
+                address: document.getElementById('custAddress').value,
                 discount: document.getElementById('discount').value,
+                // Ensure this is sent clearly
+                taxToggle: document.getElementById('taxToggle').checked,
                 items: items
             };
 
             try {
-                const res = await fetch('https://eovh4bx2wds8j60.m.pipedream.net', {
+                const res = await fetch('YOUR_PIPEDREAM_URL_HERE', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                if(res.ok) {
-                    const data = await res.json();
-                    successArea.classList.remove('hidden');
-                    // We expect Pipedream to return { invoice_url: "..." }
-                    linkInput.value = data.invoice_url || "Invoice Sent (Check Dashboard)";
-                    btn.innerText = 'Invoice Created';
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                
+                // This waits for the $.respond() from Pipedream
+                const data = await res.json();
+                
+                if (data.invoice_url) {
+                    document.getElementById('invoiceLink').value = data.invoice_url;
+                    document.getElementById('successArea').classList.remove('hidden');
+                    btn.innerText = 'Invoice Created!';
                 } else {
-                    alert('Error: Could not create invoice.');
-                    btn.disabled = false;
-                    btn.innerText = 'Generate & Send Square Invoice';
+                    throw new Error('No URL returned');
                 }
             } catch (err) {
-                alert('Connection error.');
+                console.error(err);
+                alert('Connection Error. Check Pipedream HTTP Trigger settings!');
                 btn.disabled = false;
-                btn.innerText = 'Generate & Send Square Invoice';
+                btn.innerText = 'Try Again';
             }
         });
     </script>
