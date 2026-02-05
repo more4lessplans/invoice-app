@@ -101,7 +101,7 @@
         document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.innerText = 'Syncing...';
+            btn.innerText = 'Creating Invoice...';
             btn.disabled = true;
 
             const items = Array.from(document.querySelectorAll('.item-row')).map(row => ({
@@ -128,7 +128,7 @@
             });
 
             setTimeout(() => {
-                alert('Invoice Created! Service Date and Address have been mapped to Square.');
+                alert('Success! Invoice created. Address updated on Customer Profile.');
                 btn.innerText = 'Generate Another';
                 btn.disabled = false;
                 document.getElementById('invoiceForm').reset();
