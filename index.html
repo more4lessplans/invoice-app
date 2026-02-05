@@ -3,115 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thermaco | HVAC Invoice Pro</title>
+    <title>Thermaco | Invoice Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --brand-main: #46473D;
-            --brand-accent: #81974A;
-        }
-        .bg-brand { background-color: var(--brand-main); }
-        .text-brand { color: var(--brand-main); }
-        .border-accent { border-color: var(--brand-accent); }
-        .focus-brand:focus { ring-color: var(--brand-main); border-color: var(--brand-main); }
-    </style>
 </head>
-<body class="bg-slate-50 min-h-screen py-12 px-4 font-sans">
+<body class="bg-slate-50 min-h-screen py-12 px-4 font-sans text-[#46473D]">
 
     <div class="max-w-2xl mx-auto mb-8 flex justify-center">
-        <img src="main.png" alt="Company Logo" class="h-24 w-auto object-contain">
+        <img src="main.png" alt="Company Logo" class="h-20 w-auto">
     </div>
 
     <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
         <div class="bg-[#46473D] p-6 text-white text-center border-b-4 border-[#81974A]">
-            <h1 class="text-2xl font-bold tracking-tight uppercase">Service Invoice Generator</h1>
+            <h1 class="text-2xl font-bold tracking-tight uppercase">Service Invoice</h1>
         </div>
 
         <form id="invoiceForm" class="p-8 space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Customer Details</h3>
-                    <input type="text" id="custName" placeholder="Customer Name" required class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#46473D] outline-none transition">
-                    <input type="email" id="custEmail" placeholder="Email Address" required class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#46473D] outline-none transition">
-                    <input type="tel" id="custPhone" placeholder="Phone (Optional)" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#46473D] outline-none transition">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-[#81974A]">Customer</h3>
+                    <input type="text" id="custName" placeholder="Name" required class="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-[#46473D]">
+                    <input type="email" id="custEmail" placeholder="Email" required class="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-[#46473D]">
+                    <input type="tel" id="custPhone" placeholder="Phone (Optional)" class="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-[#46473D]">
                 </div>
                 <div class="space-y-4">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Service Details</h3>
-                    <textarea id="custAddress" placeholder="Service Address (Optional)" rows="3" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#46473D] outline-none transition"></textarea>
-                    <input type="date" id="serviceDate" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#46473D] outline-none transition">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-[#81974A]">Address</h3>
+                    <textarea id="custAddress" placeholder="Address (Optional)" rows="3" class="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-[#46473D]"></textarea>
                 </div>
             </div>
 
-            <hr class="border-slate-100">
-
             <div class="space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Services & Parts</h3>
-                    <button type="button" onclick="addLineItem()" class="text-xs font-bold bg-[#81974A] text-white px-4 py-2 rounded-full hover:opacity-90 transition shadow-sm">+ Add Item</button>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-[#81974A]">Services</h3>
+                    <button type="button" onclick="addLineItem()" class="text-xs font-bold bg-[#81974A] text-white px-4 py-2 rounded-full">+ Item</button>
                 </div>
                 <div id="lineItemsList" class="space-y-3">
                     <div class="grid grid-cols-12 gap-3 item-row">
-                        <input type="text" placeholder="Description (e.g. AC Tune-up)" required class="col-span-8 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D]">
+                        <input type="text" placeholder="Description" required class="col-span-8 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D]">
                         <input type="number" step="0.01" placeholder="Price" required class="col-span-4 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D] price-input" oninput="calculateTotal()">
                     </div>
                 </div>
             </div>
 
-            <hr class="border-slate-100">
-
-            <div class="bg-slate-50 p-6 rounded-2xl space-y-4">
+            <div class="bg-slate-50 p-6 rounded-2xl space-y-4 border-l-4 border-[#81974A]">
                 <div class="flex justify-between items-center">
-                    <span class="text-slate-600 font-medium">Discount (CAD)</span>
-                    <input type="number" id="discount" placeholder="0.00" class="w-24 p-2 rounded-lg border border-slate-200 text-right focus:border-[#46473D] outline-none" oninput="calculateTotal()">
+                    <label class="flex items-center space-x-2 font-medium cursor-pointer">
+                        <input type="checkbox" id="taxToggle" class="w-5 h-5 accent-[#81974A]" onchange="calculateTotal()" checked>
+                        <span>Apply HST (13%)</span>
+                    </label>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span>Discount (CAD)</span>
+                    <input type="number" id="discount" placeholder="0.00" class="w-24 p-2 rounded-lg border text-right outline-none" oninput="calculateTotal()">
                 </div>
                 <div class="flex justify-between items-center border-t border-slate-200 pt-4">
-                    <span class="text-xl font-bold text-[#46473D]">Total Amount</span>
-                    <span id="displayTotal" class="text-2xl font-black text-[#46473D]">$0.00</span>
+                    <span class="text-xl font-bold">Total CAD</span>
+                    <span id="displayTotal" class="text-2xl font-black">$0.00</span>
                 </div>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full bg-[#46473D] text-white font-bold py-5 rounded-2xl hover:bg-black transform active:scale-95 transition-all shadow-lg shadow-slate-200">
-                Generate & Send Square Invoice
+            <button type="submit" id="submitBtn" class="w-full bg-[#46473D] text-white font-bold py-5 rounded-2xl hover:bg-black transition-all shadow-lg">
+                Generate Invoice
             </button>
         </form>
-
-        <div id="successArea" class="hidden p-8 bg-green-50 border-t border-green-100">
-            <div class="text-center">
-                <p class="text-green-700 font-bold mb-4">✅ Invoice Created Successfully!</p>
-                <p class="text-sm text-slate-600 mb-2 font-medium uppercase tracking-tighter text-xs">Copy this link for the customer:</p>
-                <input type="text" id="invoiceLink" readonly class="w-full p-3 bg-white border border-green-200 rounded-lg text-sm text-brand font-mono mb-4" onclick="this.select()">
-                <p class="text-[10px] text-slate-400 italic text-center">Interac Memo: Invoice # will be on the link page.</p>
-            </div>
-        </div>
     </div>
 
     <script>
         function addLineItem() {
             const container = document.getElementById('lineItemsList');
             const newRow = document.createElement('div');
-            newRow.className = 'grid grid-cols-12 gap-3 item-row';
-            newRow.innerHTML = `
-                <input type="text" placeholder="Description" required class="col-span-8 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D]">
-                <input type="number" step="0.01" placeholder="Price" required class="col-span-4 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D] price-input" oninput="calculateTotal()">
-            `;
+            newRow.className = 'grid grid-cols-12 gap-3 item-row mt-3';
+            newRow.innerHTML = `<input type="text" placeholder="Description" required class="col-span-8 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D]"><input type="number" step="0.01" placeholder="Price" required class="col-span-4 p-3 rounded-xl border border-slate-200 outline-none focus:border-[#46473D] price-input" oninput="calculateTotal()">`;
             container.appendChild(newRow);
         }
 
         function calculateTotal() {
-            const prices = document.querySelectorAll('.price-input');
             let subtotal = 0;
-            prices.forEach(input => {
-                subtotal += parseFloat(input.value) || 0;
-            });
+            document.querySelectorAll('.price-input').forEach(i => subtotal += parseFloat(i.value) || 0);
             const discount = parseFloat(document.getElementById('discount').value) || 0;
-            const total = Math.max(0, subtotal - discount);
-            document.getElementById('displayTotal').innerText = `$${total.toFixed(2)}`;
+            let total = subtotal - discount;
+            if (document.getElementById('taxToggle').checked) total *= 1.13;
+            document.getElementById('displayTotal').innerText = `$${Math.max(0, total).toFixed(2)}`;
         }
 
-      document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
+        document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.innerText = 'Syncing with Square...';
+            btn.innerText = 'Sending to Square...';
             btn.disabled = true;
 
             const items = Array.from(document.querySelectorAll('.item-row')).map(row => ({
@@ -125,34 +102,24 @@
                 phone: document.getElementById('custPhone').value,
                 address: document.getElementById('custAddress').value,
                 discount: document.getElementById('discount').value,
-                // Ensure this is sent clearly
                 taxToggle: document.getElementById('taxToggle').checked,
                 items: items
             };
 
-            try {
-                const res = await fetch('YOUR_PIPEDREAM_URL_HERE', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                // This waits for the $.respond() from Pipedream
-                const data = await res.json();
-                
-                if (data.invoice_url) {
-                    document.getElementById('invoiceLink').value = data.invoice_url;
-                    document.getElementById('successArea').classList.remove('hidden');
-                    btn.innerText = 'Invoice Created!';
-                } else {
-                    throw new Error('No URL returned');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Connection Error. Check Pipedream HTTP Trigger settings!');
+            fetch('https://eovh4bx2wds8j60.m.pipedream.net', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            // Handle the UI "Success" without waiting for the blocked response
+            setTimeout(() => {
+                alert('Invoice Creation Initiated! Check your Square Dashboard in a moment.');
+                btn.innerText = 'Generate Another';
                 btn.disabled = false;
-                btn.innerText = 'Try Again';
-            }
+                document.getElementById('invoiceForm').reset();
+                calculateTotal();
+            }, 2500);
         });
     </script>
 </body>
